@@ -149,7 +149,7 @@ jobs:
       run: |
         mkdir output
         [ -f openwrt/bin/targets/*/*/*-sysupgrade.bin ] && cp openwrt/bin/targets/*/*/*-sysupgrade.bin output
-        [ -f openwrt/bin/targets/*/*/*-factory.ubi ] && cp openwrt/bin/targets/*/*/*-factory.bin output
+        [ -f openwrt/bin/targets/*/*/*-factory.bin ] && cp openwrt/bin/targets/*/*/*-factory.bin output
         cd output
         echo "FIRMWARE_R3P=$PWD" >> $GITHUB_ENV
         cd ../
