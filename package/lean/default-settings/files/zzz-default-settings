@@ -1,6 +1,6 @@
 #!/bin/sh
 
-uci set system.@system[0].hostname='MAST'
+uci set system.@system[0].hostname='R3P'
 uci set system.@system[0].timezone=CST-8
 uci set system.@system[0].zonename=Asia/Shanghai
 uci commit system
@@ -11,7 +11,7 @@ uci set network.globals.ula_prefix=''
 homeip='192.168.1.1'
 wanip='192.168.1.119'
 wifiname='VAIOMI'
-uci set network.wan.hostname="MAST"
+uci set network.wan.hostname="R3P"
 
 uci set dhcp.lan.ra='relay'
 uci set dhcp.lan.dhcpv6='relay'
