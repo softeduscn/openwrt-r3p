@@ -154,6 +154,7 @@ chk_vpn() {
 
 firstrun() {
 	sysdir='/etc/sysmonitor'
+	mv $sysdir/fs.lua /usr/lib/lua/luci
 	destdir=''
 	mvdir $sysdir $destdir
 #	sed -i '/sysapp/d' /etc/crontabs/root
