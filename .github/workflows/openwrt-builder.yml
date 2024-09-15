@@ -190,9 +190,9 @@ jobs:
       uses: ophub/delete-releases-workflows@main
       with:
         delete_releases: true
-        releases_keep_latest: 5
+        releases_keep_latest: 2
         releases_keep_keyword: $TAG_NAME
         delete_workflows: true
-        workflows_keep_day: 10
+        workflows_keep_day: 1
         out_log: ${{ inputs.out_log }}
         gh_token: ${{ secrets.GITHUB_TOKEN }}

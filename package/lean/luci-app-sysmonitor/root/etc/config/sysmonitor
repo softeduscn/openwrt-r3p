@@ -22,7 +22,7 @@ config sysmonitor 'sysmonitor'
 	option firmware 'https://github.com/softeduscn/openwrt-r3p/releases/download/MI-R3P/openwrt-ramips-mt7621-xiaomi_mi-router-3-pro-squashfs-sysupgrade.bin'
 
 config host_list
-	option hostname 'MAST'
+	option hostname 'R3P'
 	option hostip '192.168.1.119'
 
 config host_list
