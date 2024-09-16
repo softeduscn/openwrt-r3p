@@ -46,6 +46,7 @@ fi
 #uci set network.wan6.metric='2'
 
 uci add_list network.@device[0].ports='wan'
+uci add_list network.@device[0].ports='wgmast'
 uci set network.lan.device='br-lan.1'
 uci set network.wan.device='br-lan.2'
 uci set network.wan6.device='br-lan.2'
@@ -115,20 +116,19 @@ config zone
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'REJECT'
-
-config forwarding
-	option dest 'wan'
-	option src 'wgmast'
+	option masq '1'
+	option mtu_fix '1'
 EOF
 fi
 
-cat >> /etc/config/network <<EOF
+cat >> /etc/config/network <<EOF	
 config bridge-vlan
 	option device 'br-lan'
 	option vlan '1'
 	list ports 'lan2'
 	list ports 'lan3'
-
+	list ports 'wgmast'
+	
 config bridge-vlan
 	option device 'br-lan'
 	option vlan '2'
