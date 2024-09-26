@@ -26,6 +26,8 @@ config smartdns
 	option seconddns_server_group 'oversea'
 	option log_output_mode 'file'
 	option mdns_lookup '1'
+	option speed_check_mode 'none'
+	option seconddns_no_speed_check '1'
 
 config server
 	option name 'PDNS'
