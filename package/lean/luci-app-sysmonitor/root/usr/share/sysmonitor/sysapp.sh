@@ -190,6 +190,7 @@ firstrun() {
 #	default dns=SmartDNS in selvpn
 	selvpn
 	echo '30=/usr/share/sysmonitor/sysapp.sh killtmp' >> /tmp/delay.sign
+	echo "300=ntpd -n -q -p ntp.aliyun.com" >> /tmp/delay.sign
 	#modify opkg source
 	sed -i 's_downloads.openwrt.org_mirrors.cloud.tencent.com/openwrt_' /etc/opkg/distfeeds.conf
 	sed -i "s/-SNAPSHOT/.10/g" /etc/opkg/distfeeds.conf
@@ -1174,6 +1175,11 @@ chkprog)
 	chk_prog
 	chkprog=$(uci_get_by_name $NAME $NAME chkprog 60)
 	echo $chkprog'='$APP_PATH'/sysapps.sh chkprog' >> /tmp/delay.sign
+	;;
+test)
+	status=$(test_url "https://www.google.com/generate_204")	
+#	curl -I -o /dev/null -skL --retry-all-errors --connect-timeout 2 --retry 1 -w %{http_code} https://www.google.com/generate_204
+	echo $status
 	;;
 *)
 	echo "No <"$arg1"> function!"

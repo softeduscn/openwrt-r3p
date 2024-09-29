@@ -1,6 +1,6 @@
 
 config smartdns
-	option enabled '0'
+	option enabled '1'
 	option server_name 'smartdns'
 	option tcp_server '1'
 	option port '6053'
@@ -47,31 +47,6 @@ config server
 	option type 'udp'
 	option enabled '1'
 	option exclude_default_group '1'
-	option server_group 'china'
-
-config server
-	option name 'ALIDNS'
-	option type 'udp'
-	option enabled '1'
-	option exclude_default_group '1'
-	option ip '223.6.6.6'
-	option server_group 'china'
-
-config server
-	option name 'BaiduDNS'
-	option ip '180.76.76.76'
-	option type 'udp'
-	option enabled '1'
-	option exclude_default_group '1'
-	option server_group 'china'
-
-config server
-	option name '114DNS'
-	option ip '114.114.115.115'
-	option type 'udp'
-	option enabled '1'
-	option exclude_default_group '1'
-	option server_group 'china'
 
 config server
 	option enabled '1'
@@ -79,15 +54,13 @@ config server
 	option ip '119.28.28.28'
 	option type 'tcp'
 	option exclude_default_group '1'
-	option server_group 'china'
 
 config server
+	option name 'BaiduDNS'
+	option ip '180.76.76.76'
+	option type 'udp'
 	option enabled '1'
-	option name 'ALIDNS'
-	option type 'tcp'
 	option exclude_default_group '1'
-	option ip '223.6.6.6'
-	option server_group 'china'
 
 config server
 	option name 'BaiduDNS'
@@ -95,22 +68,12 @@ config server
 	option type 'tcp'
 	option enabled '1'
 	option exclude_default_group '1'
-	option server_group 'china'
-
-config server
-	option enabled '1'
-	option name '114DNS'
-	option ip '114.114.115.115'
-	option type 'tcp'
-	option exclude_default_group '1'
-	option server_group 'china'
 
 config server
 	option enabled '1'
 	option name 'PDNS'
 	option ip 'dot.pub'
 	option type 'tls'
-	option server_group 'china'
 	option exclude_default_group '1'
 
 config server
@@ -118,30 +81,12 @@ config server
 	option name 'PDNS'
 	option ip 'https://doh.pub/dns-query'
 	option type 'https'
-	option server_group 'china'
-	option exclude_default_group '1'
-
-config server
-	option enabled '1'
-	option name 'ALIDNS'
-	option ip 'dns.alidns.com'
-	option type 'tls'
-	option server_group 'china'
-	option exclude_default_group '1'
-
-config server
-	option enabled '1'
-	option name 'ALIDNS'
-	option ip 'https://dns.alidns.com/dns-query'
-	option type 'https'
-	option server_group 'china'
 	option exclude_default_group '1'
 
 config server
 	option enabled '1'
 	option type 'tls'
 	option name '360DNS'
-	option server_group 'china'
 	option ip 'dot.360.cn'
 	option exclude_default_group '1'
 
@@ -149,7 +94,6 @@ config server
 	option enabled '1'
 	option type 'https'
 	option name '360DNS'
-	option server_group 'china'
 	option ip 'https://doh.360.cn/dns-query'
 	option exclude_default_group '1'
 

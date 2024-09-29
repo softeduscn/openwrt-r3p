@@ -121,7 +121,15 @@ config zone
 EOF
 fi
 
-cat >> /etc/config/network <<EOF	
+cat >> /etc/config/network <<EOF
+config device
+	option name 'phy0-ap0'
+	option ipv6 '1'
+
+config device
+	option name 'phy1-ap0'
+	option ipv6 '1'
+
 config bridge-vlan
 	option device 'br-lan'
 	option vlan '1'

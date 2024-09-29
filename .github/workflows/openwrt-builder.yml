@@ -101,7 +101,7 @@ jobs:
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
-        cp -r package/lean openwrt/package
+        mv package/lean openwrt/package
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 

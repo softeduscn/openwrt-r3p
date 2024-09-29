@@ -15,6 +15,10 @@
 sed -i s/'default LIBCURL_WOLFSSL'/'default LIBCURL_OPENSSL'/ feeds/packages/net/curl/Config.in
 rm -rf feeds/packages/net/smartdns
 rm -rf feeds/luci/applications/luci-app-smartdns
+rm -rf feeds/packages/net/v2ray-geodata
+rm -rf feeds/packages/lang/golang
+mv package/lean/golang feeds/packages/lang
+
 file="feeds/packages/net/lighttpd/Makefile"
 cat $file | grep +libopenssl >/dev/null
 if [ ! $? -eq 0 ];then

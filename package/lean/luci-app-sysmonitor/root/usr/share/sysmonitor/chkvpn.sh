@@ -42,11 +42,6 @@ chk_sign() {
 	fi
 }
 
-if [ -f /tmp/firstrun ]; then
-	echo "300=ntpd -n -q -p ntp.aliyun.com" >> /tmp/delay.sign
-	rm /tmp/firstrun
-fi
-
 #echolog "chkVPN is on."
 syspid=$(cat /tmp/chkvpn.pid)
 syspid=$((syspid+1))
