@@ -58,7 +58,8 @@ o.rmempty = false
 --o = s:option(Value, "chkprog", translate("Sysapp daemon time(s)"))
 --o.rmempty = false
 
-o = s:option(Value, "prog", translate("Run sysapp delay time(s)"))
+--o = s:option(Value, "prog", translate("Run sysapp delay time(s)"))
+o = s:option(Value, "chkprog", translate("Check delay_prog time(s)"))
 o.rmempty = false
 
 o = s:option(Value, translate("firmware"), translate("Firmware Address"))
@@ -79,8 +80,12 @@ function s.create(e, t)
 	luci.http.redirect(e.extedit:format(id))
 end
 
+o = s:option(Flag, "enabled", translate("Enabled"))
+o.width = "8%"
+o.rmempty = true
+
 o = s:option(Value, "name", translate("Name"))
-o.width = "auto"
+o.width = "12%"
 o.rmempty = true
 
 o = s:option(Value, "path", translate("Path + Main"))
@@ -88,11 +93,11 @@ o.width = "auto"
 o.rmempty = true
 
 o = s:option(Value, "program", translate("Program name"))
-o.width = "auto"
+o.width = "16%"
 o.rmempty = true
 
 o = s:option(Value, "cycle", translate("Run cycle(s)"))
-o.width = "auto"
+o.width = "10%"
 o.rmempty = true
 
 --o = s:option(Value, "first", translate("First run cycle(s)"))

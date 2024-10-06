@@ -64,7 +64,7 @@ o.rmempty = false
 
 --o = s:option(Value, translate("firmware"), translate("Firmware Address"))
 --o.description = translate("Firmeware download Address)")
---o.default = "https://github.com/softeduscn/Actions-openwrt1907-r3p/releases/download/MI-R3P/openwrt-ramips-mt7621-xiaomi_mi-router-3-pro-squashfs-sysupgrade.bin"
+--o.default = "https://github.com/softeduscn/Actions-openwrt-r3p/releases/download/MI-R3P/openwrt-ramips-mt7621-xiaomi_mi-router-3-pro-squashfs-sysupgrade.bin"
 --o.rmempty = false
 
 o = s:option(DynamicList, "dnslist", translate("DNS List"))

@@ -81,17 +81,51 @@ curl_url() {
 	echo $result
 }
 
-get_cycle() {
+setdelay_offon() {
+	enabled=0
+	[ -n "$2" ] && enabled=1		
+	prog_num=$(cat /etc/config/sysmonitor|grep prog_list|wc -l)
+	num=0
+	while (($num<$prog_num))
+	do
+		program=$(uci_get_by_name $NAME @prog_list[$num] program)
+		if [ "$program" == $1 ]; then
+			uci_set_by_name $NAME @prog_list[$num] enabled $enabled
+			uci commit $NAME
+			break
+		fi
+		num=$((num+1))
+	done
+}
+
+getdelay() {
 	prog_num=$(cat /etc/config/sysmonitor|grep prog_list|wc -l)
 	num=0
 	status=-1
 	while (($num<$prog_num))
 	do
-		program=$(uci get sysmonitor.@prog_list[$num].program)
-		path=$(uci get sysmonitor.@prog_list[$num].path)
-		cycle=$(uci get sysmonitor.@prog_list[$num].cycle)
+		program=$(uci_get_by_name $NAME @prog_list[$num] program)
 		if [ "$program" == $1 ]; then
-			status=$cycle'='$path' '$program
+			status=$(uci_get_by_name $NAME @prog_list[$num] $2)
+			break
+		fi
+		num=$((num+1))
+	done
+echo $status
+}
+
+get_delay() {
+	prog_num=$(cat /etc/config/sysmonitor|grep prog_list|wc -l)
+	num=0
+	status=-1
+	while (($num<$prog_num))
+	do
+		program=$(uci_get_by_name $NAME @prog_list[$num] program)
+		path=$(uci_get_by_name $NAME @prog_list[$num] path "/usr/share/sysmonitor/sysapp.sh")
+		cycle=$(uci_get_by_name $NAME @prog_list[$num] cycle 5)
+		enabled=$(uci_get_by_name $NAME @prog_list[$num] enabled 0)
+		if [ "$program" == $1 ]; then
+			status=$enabled$cycle'='$path' '$program
 			break
 		fi
 		num=$((num+1))
@@ -100,11 +134,19 @@ echo $status
 }
 
 delay_prog() {
-	status=$(get_cycle $1)
-	if [ -n "$2" ]; then
-		status=$2'='$(echo $status|cut -d'=' -f2-)
+	status=$(get_delay $1)
+	if [ "$status" != "" ]; then
+		enabled=${status:0:1}
+		status=${status:1}
+		program=$(echo $status|cut -d' ' -f2)
+		if [ -n "$2" ]; then
+			status=$2'='$(echo $status|cut -d'=' -f2-)
+			setdelay_offon $program 1
+			echo $status >> /tmp/delay.sign
+		else
+			[ "$enabled" == 1 ] && echo $status >> /tmp/delay.sign
+		fi	
 	fi
-	echo $status >> /tmp/delay.sign	
 }
 
 chk_prog() {
@@ -112,12 +154,16 @@ prog_num=$(cat /etc/config/sysmonitor|grep prog_list|wc -l)
 num=0
 while (($num<$prog_num))
 do
-	path=$(uci get sysmonitor.@prog_list[$num].path)
-	program=$(uci get sysmonitor.@prog_list[$num].program)
+	program=$(uci_get_by_name $NAME @prog_list[$num] program)
+	path=$(uci_get_by_name $NAME @prog_list[$num] path "/usr/share/sysmonitor/sysapp.sh")
+	enabled=$(uci_get_by_name $NAME @prog_list[$num] enabled 0)
 	status=$(cat /tmp/delay.list|grep $program|wc -l)
 	if [ "$status" == 0 ]; then
-		time=$(uci get sysmonitor.@prog_list[$num].cycle)
-		echo $time'='$path' '$program >> /tmp/delay.sign
+		cycle=$(uci_get_by_name $NAME @prog_list[$num] cycle 200)
+		enabled=$(uci_get_by_name $NAME @prog_list[$num] enabled 0)
+		[ "$enabled" == 1 ] && echo $cycle'='$path' '$program >> /tmp/delay.sign
+	else	
+		[ "$enabled" == 0 ] && sed -i "/$program/d" /tmp/delay.list
 	fi
 	num=$((num+1))
 done
@@ -157,10 +203,7 @@ firstrun() {
 	mv $sysdir/fs.lua /usr/lib/lua/luci
 	destdir=''
 	mvdir $sysdir $destdir
-#	sed -i '/sysapp/d' /etc/crontabs/root
-#	echo "0 * * * * /usr/share/sysmonitor/sysapp.sh update_ddns" >> /etc/crontabs/root
-#	echo "* * * * * /usr/share/sysmonitor/sysapp.sh syscron" >> /etc/crontabs/root
-#	crontab /etc/crontabs/root
+	[ ! -f /etc/crontabs/root ] && touch /etc/crontabs/root
 	[ ! -n "$(pgrep -f cron)" ] && /etc/init.d/cron start
 	[ ! -n "$(pgrep -f ttyd)" ] && /usr/bin/ttyd -6 /bin/login &
 	if [ -f /etc/init.d/mosdns ]; then
@@ -190,11 +233,12 @@ firstrun() {
 #	default dns=SmartDNS in selvpn
 	selvpn
 	echo '30=/usr/share/sysmonitor/sysapp.sh killtmp' >> /tmp/delay.sign
-	echo "300=ntpd -n -q -p ntp.aliyun.com" >> /tmp/delay.sign
+	echo "30=ntpd -n -q -p ntp.aliyun.com" >> /tmp/delay.sign
 	#modify opkg source
 	sed -i 's_downloads.openwrt.org_mirrors.cloud.tencent.com/openwrt_' /etc/opkg/distfeeds.conf
 	sed -i "s/-SNAPSHOT/.10/g" /etc/opkg/distfeeds.conf
 	[ "$(pgrep -f sysmonitor.sh|wc -l)" == 0 ] && $APP_PATH/monitor.sh
+	echo "15=touch /tmp/firstrun" >> /tmp/delay.sign
 }
 
 mvdir() {
@@ -675,10 +719,10 @@ vpn_list)
 	done < /tmp/regvpn
 	;;
 buttontitle)
+	button=''
 	redir='ddns'
 	[ "$(uci_get_by_name $NAME $NAME ddnslog 0)" == 1 ] && redir='log'
 #	button='<button class="button1"><a href="/cgi-bin/luci/admin/services/ttyd" target="_blank">Terminal</a></button>'
-	[ $(uci_get_by_name $NAME $NAME ddns 0) == 1 ] && [ $(uci_get_by_name $NAME $NAME vpntype 0) == 'VPN' ]  && button=$button'<br><button class="button1"><a href="/cgi-bin/luci/admin/sys/sysmonitor/sysmenu?sys=UpdateDDNS&sys1=&redir='$redir'">UpdateDDNS</a></button>'
 	dns=$(uci_get_by_name $NAME $NAME dns 'NULL')
 	if [ "$dns" != "NULL" ]; then
 		button=$button' <button class=button4 title="Close DNS"><a href="/cgi-bin/luci/admin/sys/sysmonitor/sysmenu?sys=close_dns&sys1=&redir=settings">CloseDNS</a></button>'
@@ -729,7 +773,7 @@ button)
 	fi
 	;;
 lan)
-	button='<font color=6699cc>lan: </font><a href="/cgi-bin/luci/admin/network/network" target="_blank">'$(uci get network.lan.ipaddr)'</a> <font color=9699cc>dns:'$(uci get network.lan.dns)'</font>'
+	button='<font color=6699cc>lan: </font><a title="GOTO network setting" href="/cgi-bin/luci/admin/network/network" target="_blank">'$(uci get network.lan.ipaddr)'</a> <font color=9699cc>dns:'$(uci get network.lan.dns)'</font>'
 	;;
 wantitle)
 	button=''
@@ -743,7 +787,7 @@ wan)
 	ip=$(cat /www/ip.html)
 	gateway=$(uci get network.wan.gateway)
 	vpnip=$(uci_get_by_name $NAME $NAME vpnip '192.168.1.1')
-	button='<font color=6699cc>wan: </font><a href="/cgi-bin/luci/admin/network/network" target="_blank">'$ip'</a> <font color=9699cc>['$(cat /www/ip6.html)']</font><br>'
+	button='<font color=6699cc>wan: </font><a title="GOTO network setting" href="/cgi-bin/luci/admin/network/network" target="_blank">'$ip'</a> <font color=9699cc>['$(cat /www/ip6.html)']</font><br>'
 	if [ "$vpnip" == $gateway ]; then
 		button=$button'<font color=22aacc>gateway:'$(uci get network.wan.gateway)' dns:'$(uci get network.wan.dns)'</font>'
 		host=$(gethost)
@@ -847,9 +891,6 @@ sysmenu() {
 		;;
 	UpdateHOST)
 		reg_vpn
-		;;
-	UpdateDDNS)
-		update_ddns &
 		;;
 	CloseVPN)
 		close_vpn
@@ -958,7 +999,6 @@ updatevpn() {
 
 update_ddns() {
 	[ $(uci_get_by_name $NAME $NAME ddns 0) == 0 ] && exit
-	[ $(uci_get_by_name $NAME $NAME vpntype 0) != 'VPN' ] && exit
 	[ -f /tmp/update_ddns ] && exit
 	touch /tmp/update_ddns
 	echoddns 'Update DDNS'
@@ -986,7 +1026,7 @@ update_ddns() {
 	done
 	echoddns '-------------------'
 	rm /tmp/update_ddns
-	echo "90=$APP_PATH/sysapp.sh getddnsip" >> /tmp/delay.sign
+#	echo "90=$APP_PATH/sysapp.sh getddnsip" >> /tmp/delay.sign
 }
 
 getddnsip() {
@@ -997,7 +1037,7 @@ getddnsip() {
 		iptype=$(uci get sysmonitor.@ddns_list[$num].iptype)
 		hostname=$(uci get sysmonitor.@ddns_list[$num].hostname)
 		if [ "$iptype" == 'ip6' ]; then
-			ipaddr=$(host $hostname|grep IPv6|cut -d' ' -f5)
+			ipaddr=$(host 'ip6.'$hostname|grep IPv6|cut -d' ' -f5)
 		else
 			ipaddr=$(host $hostname|grep 'has address'|cut -d' ' -f4)
 		fi
@@ -1037,6 +1077,7 @@ shift
 case $arg1 in
 update_ddns)
 	update_ddns
+	delay_prog update_ddns
 	;;
 sysmenu)
 	sysmenu $1 $2
@@ -1045,22 +1086,23 @@ sysbutton)
 	sysbutton $1
 	;;
 updateregvpn)
-	delay_prog updateregvpn
 	update_regvpn
+	delay_prog updateregvpn
 	;;
 chkvpn)
-	delay_prog chkvpn
 	chkvpn
+	delay_prog chkvpn
 	;;
 updatehost)
-	delay_prog updatehost
 	updatehost
+	delay_prog updatehost
 	;;
 updatevpn)
 	updatevpn
 	;;
 getddnsip)
 	getddnsip
+	delay_prog getddnsip
 	;;
 firstrun)
 	firstrun
@@ -1176,10 +1218,8 @@ chkprog)
 	chkprog=$(uci_get_by_name $NAME $NAME chkprog 60)
 	echo $chkprog'='$APP_PATH'/sysapps.sh chkprog' >> /tmp/delay.sign
 	;;
-test)
-	status=$(test_url "https://www.google.com/generate_204")	
-#	curl -I -o /dev/null -skL --retry-all-errors --connect-timeout 2 --retry 1 -w %{http_code} https://www.google.com/generate_204
-	echo $status
+getdelay)
+	getdelay $1 $2
 	;;
 *)
 	echo "No <"$arg1"> function!"

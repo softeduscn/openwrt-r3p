@@ -42,6 +42,30 @@ chk_sign() {
 	fi
 }
 
+run_prog() {
+echo "" >/tmp/delay.sign
+echo "" >/tmp/delay.list
+prog_num=$(cat /etc/config/sysmonitor|grep prog_list|wc -l)
+num=0
+while (($num<$prog_num))
+do
+	program=$(uci_get_by_name $NAME @prog_list[$num] program)
+	path=$(uci_get_by_name $NAME @prog_list[$num] path "/usr/share/sysmonitor/sysapp.sh")
+	enabled=$(uci_get_by_name $NAME @prog_list[$num] enabled 0)
+	status=$(cat /tmp/delay.list|grep $program|wc -l)
+	if [ "$status" == 0 ]; then
+		cycle=$(uci_get_by_name $NAME @prog_list[$num] first 100)
+		enabled=$(uci_get_by_name $NAME @prog_list[$num] enabled 0)
+		[ "$enabled" == 1 ] && echo $cycle'='$path' '$program >> /tmp/delay.sign
+	else	
+		[ "$enabled" == 0 ] && sed -i "/$program/d" /tmp/delay.list
+	fi
+	num=$((num+1))
+done
+echo '60='$APP_PATH'/sysapps.sh chkprog' >> /tmp/delay.list
+[ -f /tmp/firstrun ] && rm /tmp/firstrun
+}
+
 #echolog "chkVPN is on."
 syspid=$(cat /tmp/chkvpn.pid)
 syspid=$((syspid+1))
@@ -102,7 +126,11 @@ while [ "1" == "1" ]; do
 				;;
 		esac
 	done
-	[ $(cat /tmp/delay.list|grep chkprog|wc -l) == 0 ] && $APP_PATH/sysapp.sh chkprog
+	if [ -f /tmp/firstrun ]; then
+		run_prog
+	else
+		[ $(cat /tmp/delay.list|grep chkprog|wc -l) == 0 ] && $APP_PATH/sysapp.sh chkprog
+	fi
 	if [ -f /tmp/delay.sign ]; then
 		while read i
 		do

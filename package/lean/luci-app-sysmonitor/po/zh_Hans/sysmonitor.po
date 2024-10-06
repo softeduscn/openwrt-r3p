@@ -184,6 +184,9 @@ msgstr "sysapp守护检测间隔(秒)"
 msgid "Run sysapp delay time(s)"
 msgstr "将运行sysapp时间(秒)"
 
+msgid "Check delay_prog time(s)"
+msgstr "检查程序时间(秒)"
+
 msgid "First run cycle(s)"
 msgstr "首次运行周期(秒)"
 

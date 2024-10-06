@@ -13,11 +13,13 @@
 # Modify default IP
 #sed -i 's/192.168.1.1/192.168.50.5/g' package/base-files/files/bin/config_generate
 sed -i s/'default LIBCURL_WOLFSSL'/'default LIBCURL_OPENSSL'/ feeds/packages/net/curl/Config.in
-rm -rf feeds/packages/net/smartdns
-rm -rf feeds/luci/applications/luci-app-smartdns
-rm -rf feeds/packages/net/v2ray-geodata
-rm -rf feeds/packages/lang/golang
-mv package/lean/golang feeds/packages/lang
+[ -d package/lean/smartdns ] && rm -rf feeds/packages/net/smartdns
+[ -d package/lean/luci-app-smartdns ] && rm -rf feeds/luci/applications/luci-app-smartdns
+[ -d package/lean/v2ray-geodata ] && rm -rf feeds/packages/net/v2ray-geodata
+if [ -d package/lean/golang ]; then
+	rm -rf feeds/packages/lang/golang
+	mv package/lean/golang feeds/packages/lang
+fi
 
 file="feeds/packages/net/lighttpd/Makefile"
 cat $file | grep +libopenssl >/dev/null

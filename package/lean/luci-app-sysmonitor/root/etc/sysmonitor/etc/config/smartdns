@@ -20,7 +20,7 @@ config smartdns
 	option doh_server '1'
 	option tls_server '1'
 	option tls_server_port '853'
-	option dualstack_ip_selection '1'
+	option dualstack_ip_selection '0'
 	option seconddns_tcp_server '1'
 	option seconddns_port '8653'
 	option seconddns_server_group 'oversea'
@@ -28,74 +28,8 @@ config smartdns
 	option mdns_lookup '1'
 	option speed_check_mode 'none'
 	option seconddns_no_speed_check '1'
-
-config server
-	option name 'PDNS'
-	option ip '119.29.29.29'
-	option type 'udp'
-	option enabled '1'
-
-config server
-	option name 'PDNS'
-	option ip '119.29.29.29'
-	option type 'tcp'
-	option enabled '1'
-
-config server
-	option name 'PDNS'
-	option ip '119.28.28.28'
-	option type 'udp'
-	option enabled '1'
-	option exclude_default_group '1'
-
-config server
-	option enabled '1'
-	option name 'PDNS'
-	option ip '119.28.28.28'
-	option type 'tcp'
-	option exclude_default_group '1'
-
-config server
-	option name 'BaiduDNS'
-	option ip '180.76.76.76'
-	option type 'udp'
-	option enabled '1'
-	option exclude_default_group '1'
-
-config server
-	option name 'BaiduDNS'
-	option ip '180.76.76.76'
-	option type 'tcp'
-	option enabled '1'
-	option exclude_default_group '1'
-
-config server
-	option enabled '1'
-	option name 'PDNS'
-	option ip 'dot.pub'
-	option type 'tls'
-	option exclude_default_group '1'
-
-config server
-	option enabled '1'
-	option name 'PDNS'
-	option ip 'https://doh.pub/dns-query'
-	option type 'https'
-	option exclude_default_group '1'
-
-config server
-	option enabled '1'
-	option type 'tls'
-	option name '360DNS'
-	option ip 'dot.360.cn'
-	option exclude_default_group '1'
-
-config server
-	option enabled '1'
-	option type 'https'
-	option name '360DNS'
-	option ip 'https://doh.360.cn/dns-query'
-	option exclude_default_group '1'
+	option seconddns_no_rule_nameserver '1'
+	option seconddns_no_dualstack_selection '1'
 
 config domain-rule
 
@@ -104,5 +38,5 @@ config ip-rule
 config client-rule
 	option enabled '0'
 	option force_https_soa '1'
-	option dualstack_ip_selection '1'
+	option dualstack_ip_selection '0'
 

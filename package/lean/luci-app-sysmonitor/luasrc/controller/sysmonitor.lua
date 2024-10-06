@@ -12,7 +12,7 @@ function index()
 	entry({"admin", "sys", "sysmonitor","settings"}, cbi("sysmonitor/setup"), _("System Settings"), 30).dependent = false
 	entry({"admin", "sys", "sysmonitor", "general"}, cbi("sysmonitor/general"),_("General Settings"), 40).leaf = true
 	entry({"admin", "sys", "sysmonitor", "host"},cbi("sysmonitor/host"),_("Host"), 50).leaf = true
---	entry({"admin", "sys", "sysmonitor", "ddns"}, cbi("/sysmonitor/ddns"), _("DDNS"), 60).leaf = true
+	entry({"admin", "sys", "sysmonitor", "ddns"}, cbi("/sysmonitor/ddns"), _("DDNS"), 60).leaf = true
 	entry({"admin", "sys", "sysmonitor", "wgusers"},form("sysmonitor/wgusers"),_("WGusers"), 70).leaf = false
 	entry({"admin", "sys", "sysmonitor", "update"}, form("sysmonitor/filetransfer"),_("Upload"), 80).leaf = false
 	entry({"admin", "sys", "sysmonitor", "log"},form("sysmonitor/log"),_("Log"), 90).leaf = true
