@@ -7,6 +7,12 @@ msgstr "无法打开文件："
 msgid "Create upload file error."
 msgstr "创建上传文件失败。"
 
+msgid "Up"
+msgstr "上移"
+
+msgid "Down"
+msgstr "下移"
+
 msgid "Download"
 msgstr "下载"
 
@@ -195,6 +201,9 @@ msgstr "运行周期(秒)"
 
 msgid "Program name"
 msgstr "程序名"
+
+msgid "PROG"
+msgstr "程序"
 
 msgid "Path + Main"
 msgstr "路径+主程序"
