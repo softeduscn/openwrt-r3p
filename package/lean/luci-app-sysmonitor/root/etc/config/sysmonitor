@@ -18,7 +18,6 @@ config sysmonitor 'sysmonitor'
 	option ipsec '0'
 	option pptp '0'
 	option dhcp '0'
-	list dnslist '119.29.29.29'
 	list vpn '192.168.1.1'
 	option firmware 'https://github.com/softeduscn/openwrt-r3p/releases/download/MI-R3P/openwrt-ramips-mt7621-xiaomi_mi-router-3-pro-squashfs-sysupgrade.bin'
 

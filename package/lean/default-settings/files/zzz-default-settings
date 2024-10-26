@@ -1,17 +1,23 @@
 #!/bin/sh
 
-uci set system.@system[0].hostname='R3P'
+hostname='R3P'
+uci set system.@system[0].hostname=$hostname
 uci set system.@system[0].timezone=CST-8
 uci set system.@system[0].zonename=Asia/Shanghai
 uci commit system
 
+if [ -f /etc/config/upnpd ]; then
+	uci set upnpd.config.enabled=1
+	uci set upnpd.config.external_ip='111.206.174.2'
+	uci commit upnpd
+fi
 
 uci set network.globals.ula_prefix=''
 #uci set network.@device[0].MTU='1472'
 homeip='192.168.1.1'
 wanip='192.168.1.119'
 wifiname='VAIOMI'
-uci set network.wan.hostname="R3P"
+uci set network.wan.hostname=$hostname
 
 uci set dhcp.lan.ra='relay'
 uci set dhcp.lan.dhcpv6='relay'
